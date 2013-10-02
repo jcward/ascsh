@@ -5,7 +5,7 @@ public class ascsh extends MXMLC
 {
   public static void main(String[] args)
   {
-    System.out.println("ascsh 0.1");
+    // TODO: compile id's (args -> MXMLC / COMPC)
 
     String line;
     Scanner stdin = new Scanner(System.in);
@@ -13,7 +13,9 @@ public class ascsh extends MXMLC
     {
       int exitCode = MXMLC.staticMainNoExit(args);
       System.out.println("Compile status: "+exitCode);
-    } while(stdin.hasNextLine() && !(line=stdin.nextLine()).equals("exit"));
+      System.out.println("----------------------------");
+      System.out.println("(ascsh)");
+    } while(stdin.hasNextLine() && !(line=stdin.nextLine()).equals("quit"));
 
     System.exit(0);
   }
