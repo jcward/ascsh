@@ -1,4 +1,6 @@
-ascsh
-=====
+ActionScript Compiler 2.0 Shell
+===============================
 
-ActionScript Compiler 2.0 Shell (ascsh is to AIR SDK as fcsh is to Flex SDK)
+Details coming soon...
+
+version 0.1 - proof of concept

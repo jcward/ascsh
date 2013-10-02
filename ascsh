@@ -1,0 +1,26 @@
+if [ "x${AIR_SDK_HOME}" = "x" ]
+then
+    SCRIPT_HOME=`dirname $0`
+    AIR_SDK_HOME=${SCRIPT_HOME}/..
+else
+    echo Using AIR SDK: $AIR_SDK_HOME
+fi
+
+case `uname` in
+        CYGWIN*)
+            OS="Windows"
+        ;;
+        *)
+            OS=Unix
+esac
+
+
+if [ $OS = "Windows" ]; then
+
+    AIR_SDK_HOME=`cygpath -m $AIR_SDK_HOME`
+
+fi
+
+VMARGS="-Xmx512m -Dsun.io.useCanonCaches=false "
+
+java $VMARGS $SETUP_SH_VMARGS -Dflexlib="$AIR_SDK_HOME/frameworks" -cp ${AIR_SDK_HOME}/lib:${AIR_SDK_HOME}/lib/compiler.jar ascsh "$@"
