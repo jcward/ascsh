@@ -1,3 +1,4 @@
 *.class
 reference
 test/test.swf
+src/**/*.class
