@@ -13,7 +13,7 @@ package
         trace(val);
         throw new Error("Config param mismatch!");
       }
-      trace("Success");
+      trace("Success!!");
     }
   }
 }

@@ -8,22 +8,35 @@ public class ascsh
 {
   public static void main(String[] args)
   {
-    System.out.println("ascsh v0.2 by jeff.ward@simbulus.com");
+    System.out.println("ascsh v0.2 by Jeff Ward, simbulus.com");
 
+    // Allow compile from initial commandline
     if (args.length>0) compile(args);
     System.out.println("(ascsh)");
 
+    // Monitor stdin for new commands
     String line = "";
     Scanner stdin = new Scanner(System.in);
     do
     {
       if (line.equals("")) continue;
-      try {
-        String[] result = Commandline.translateCommandline(line);
-        compile(result);
-      } catch (Exception e) {
-        System.out.println("Error parsing command:\n"+line);        
+
+      String[] result = null;
+      if (line.indexOf("|x|")>=0) {
+        // join token used by ascshd
+        result = line.split("\\|x\\|");
+      } else {
+        // This isn't 100% reliable, hence the special token above
+        try {
+          System.out.println("commandline parsing...");
+          result = Commandline.translateCommandline(line);
+        } catch (Exception e) {
+          System.out.println("Error parsing command:\n"+line);
+          System.out.println("(ascsh)");
+          continue;
+        }
       }
+      compile(result);
       System.out.println("(ascsh)");
 
     } while (stdin.hasNextLine() &&
@@ -34,6 +47,7 @@ public class ascsh
     System.exit(0);
   }
 
+  // Invoke MXMLC or COMPC
   public static void compile(String[] args)
   {
     // Shift first element (command) from args

@@ -9,7 +9,7 @@ then
   javac -cp $AIR_HOME/lib:$AIR_HOME/lib/compiler.jar:. Commandline.java && \
   javac -cp $AIR_HOME/lib:$AIR_HOME/lib/compiler.jar:. ascsh.java && \
   cp ascsh.class Commandline.class $AIR_HOME/lib/ && \
-  cp ascsh ascsh.bat $AIR_HOME/bin/
+  cp ascsh ascsh.bat ascshd $AIR_HOME/bin/
   echo "Complete"
 else
 	echo "Error, expected to find ASC2 compiler at \$AIR_HOME/lib/compiler.jar"

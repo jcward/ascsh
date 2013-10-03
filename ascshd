@@ -1,14 +1,13 @@
 #!/usr/bin/env ruby
 
 require 'socket'
-require 'json'
 
 $hostname = 'localhost'
 $port = 27839
 $ascsh_bin = ENV["AIR_HOME"]+"/bin/ascsh"
 
 class Server
-  ASCSH_PROMPT = "\n(ascsh)"
+  ASCSH_PROMPT = "(ascsh)\n"
   @output_buffer = ""
   def self.read_until_prompt(proc)
     @output_buffer << proc.readpartial(256) until
@@ -22,8 +21,8 @@ class Server
 
   # Server feeds the ascsh process
   def self.ascshd_server
-    puts "Starting aschd server, port #{$port}, pid #{Process.pid}"
     server = TCPServer.open($port)
+    puts "Starting aschd server, v0.2, port #{$port}, pid #{Process.pid}"
     ascsh_process = IO.popen($ascsh_bin+" 2>&1", "r+")
     read_until_prompt(ascsh_process)
 
@@ -33,7 +32,6 @@ class Server
       next if (cmd==nil || cmd.length<1)
       cmd.strip!
 
-      #puts "got cmd:\n#{cmd.split('||')}"
       case cmd
         when "kill"
         puts "ascshd server exiting"
@@ -43,8 +41,7 @@ class Server
       else
         ascsh_process.puts(cmd)
         result = read_until_prompt(ascsh_process)
-        #puts "Result:\n #{result}"
-        client.puts JSON.generate result.split("\n")
+        result.split("\n").each { |line| client.puts(line) }
         client.close
       end
 
@@ -54,21 +51,23 @@ end
 
 # Check args
 if (ARGV.length==0) then
+  puts "ascshd v0.2 by Jeff Ward, simbulus.com"
   puts "Usage: ascshd [kill] [mxmlc <args>] [compc <args>]"
   exit
 end
 
+# Check for AIR SDK with ascsh installed
 raise "Cannot find ascsh at \$AIR_HOME/bin/ascsh" unless File.exist?($ascsh_bin)
 
-is_kill = ARGV[0]=='kill'
-raise "Cannot -kill with other operations" if (is_kill && ARGV.length>1)
-raise "Invalid argument #{ARGV[0]}" unless ["kill", "mxmlc", "compc"].include?(ARGV[0])
+$is_kill = ARGV[0]=='kill'
+raise "Cannot -kill with other operations" if ($is_kill && ARGV.length>1)
+raise "Invalid argument '#{ARGV[0]}' (valid args are kill, mxmlc, and compc)" unless ["kill", "mxmlc", "compc"].include?(ARGV[0])
 
 # Check if server is running, start it if necessary
 begin
   s = TCPSocket.open($hostname, $port)
 rescue Errno::ECONNREFUSED
-  if is_kill then
+  if $is_kill then
     puts "ascshd is not running."
     exit
   end
@@ -79,24 +78,14 @@ rescue Errno::ECONNREFUSED
   s = TCPSocket.open($hostname, $port)
 end
 
-# Send commandline args to server
-if is_kill then
+# Send command to server
+if $is_kill then
   puts "Killing server..."
   s.puts "kill"
-  s.close
-  exit
+  sleep 0.25
+else
+  s.puts ARGV.join('|x|') # split token in ascsh
+  while (line=s.gets) do puts line end
 end
 
-# Escape input args for joining with ' '
-args = ARGV.map { |arg|
-  if (arg.match(/\s/)!=nil) then
-    puts "Mapping: #{arg}"
-    '"'+arg.gsub(/\\/, "\\\\\\").gsub(/"/, '\\\"')+'"'
-  else
-    arg
-  end
-}
-s.puts args.join(' ')
-response = s.gets
-puts JSON.parse(response).join("\n")
 s.close
