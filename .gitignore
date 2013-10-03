@@ -1,2 +1,3 @@
-ascsh.class
+*.class
 reference
+test/test.swf

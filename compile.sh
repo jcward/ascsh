@@ -6,8 +6,9 @@ fi
 if [ -f "$AIR_HOME/lib/compiler.jar" ]
 then
   # compile and install
-  javac -cp $AIR_HOME/lib:$AIR_HOME/lib/compiler.jar ascsh.java && \
-  cp ascsh.class $AIR_HOME/lib/ && \
+  javac -cp $AIR_HOME/lib:$AIR_HOME/lib/compiler.jar:. Commandline.java && \
+  javac -cp $AIR_HOME/lib:$AIR_HOME/lib/compiler.jar:. ascsh.java && \
+  cp ascsh.class Commandline.class $AIR_HOME/lib/ && \
   cp ascsh ascsh.bat $AIR_HOME/bin/
   echo "Complete"
 else
