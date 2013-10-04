@@ -5,12 +5,10 @@ fi
 
 if [ -f "$AIR_HOME/lib/ascsh.class" ]
 then
-  # compile and install
+  # uninstall
   rm $AIR_HOME/lib/ascsh.class
   rm $AIR_HOME/lib/Commandline.class
-  rm $AIR_HOME/bin/ascsh
-  rm $AIR_HOME/bin/ascsh.bat
-  rm $AIR_HOME/bin/ascshd
+  rm $AIR_HOME/bin/ascsh*
   echo "Removed ascsh from $AIR_HOME"
 else
 	echo "ascsh in not installed in $AIR_HOME"

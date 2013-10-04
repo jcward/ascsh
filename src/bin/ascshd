@@ -52,7 +52,7 @@ end
 # Check args
 if (ARGV.length==0) then
   puts "ascshd v0.2 by Jeff Ward, simbulus.com"
-  puts "Usage: ascshd [kill] [mxmlc <args>] [compc <args>]"
+  puts "Usage: ascshd [kill] [server] [mxmlc <args>] [compc <args>]"
   exit
 end
 
@@ -60,8 +60,15 @@ end
 raise "Cannot find ascsh at \$AIR_HOME/bin/ascsh" unless File.exist?($ascsh_bin)
 
 $is_kill = ARGV[0]=='kill'
-raise "Cannot -kill with other operations" if ($is_kill && ARGV.length>1)
-raise "Invalid argument '#{ARGV[0]}' (valid args are kill, mxmlc, and compc)" unless ["kill", "mxmlc", "compc"].include?(ARGV[0])
+raise "Cannot use kill with other operations" if ($is_kill && ARGV.length>1)
+raise "Invalid argument '#{ARGV[0]}' (valid args are kill, mxmlc, and compc)" unless ["kill", "server", "mxmlc", "compc"].include?(ARGV[0])
+
+# server argument
+if (ARGV[0]=='server') then
+  raise "Cannot use server with other operations" if (ARGV.length>1)
+  Server.ascshd_server()
+  exit
+end
 
 # Check if server is running, start it if necessary
 begin
@@ -71,9 +78,11 @@ rescue Errno::ECONNREFUSED
     puts "ascshd is not running."
     exit
   end
-  fork do
-    Server.ascshd_server()
-  end
+  spawn(ENV, "ruby #{$0} server")
+  # fork doesn't work on windows...
+  #fork do
+  #  Server.ascshd_server()
+  #end
   sleep 0.25 # wait for server to start
   s = TCPSocket.open($hostname, $port)
 end
