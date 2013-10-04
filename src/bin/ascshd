@@ -1,0 +1,100 @@
+#!/usr/bin/env ruby
+
+require 'socket'
+
+$hostname = 'localhost'
+$port = 27839
+$ascsh_bin = ENV["AIR_HOME"]+"/bin/ascsh"
+
+class Server
+  ASCSH_PROMPT = "(ascsh)\n"
+  @output_buffer = ""
+  def self.read_until_prompt(proc)
+    @output_buffer << proc.readpartial(256) until
+      @output_buffer.include? ASCSH_PROMPT
+    output, @output_buffer =
+      @output_buffer.split(ASCSH_PROMPT, 2)
+    output
+  rescue EOFError
+    raise "Error reading ascsh output"
+  end
+
+  # Server feeds the ascsh process
+  def self.ascshd_server
+    server = TCPServer.open($port)
+    puts "Starting aschd server, v0.2, port #{$port}, pid #{Process.pid}"
+    ascsh_process = IO.popen($ascsh_bin+" 2>&1", "r+")
+    read_until_prompt(ascsh_process)
+
+    loop {
+      client = server.accept
+      cmd = client.gets
+      next if (cmd==nil || cmd.length<1)
+      cmd.strip!
+
+      case cmd
+        when "kill"
+        puts "ascshd server exiting"
+        ascsh_process.close
+        ascsh_process = nil
+        exit
+      else
+        ascsh_process.puts(cmd)
+        result = read_until_prompt(ascsh_process)
+        result.split("\n").each { |line| client.puts(line) }
+        client.close
+      end
+
+    }
+  end
+end
+
+# Check args
+if (ARGV.length==0) then
+  puts "ascshd v0.2 by Jeff Ward, simbulus.com"
+  puts "Usage: ascshd [kill] [server] [mxmlc <args>] [compc <args>]"
+  exit
+end
+
+# Check for AIR SDK with ascsh installed
+raise "Cannot find ascsh at \$AIR_HOME/bin/ascsh" unless File.exist?($ascsh_bin)
+
+$is_kill = ARGV[0]=='kill'
+raise "Cannot use kill with other operations" if ($is_kill && ARGV.length>1)
+raise "Invalid argument '#{ARGV[0]}' (valid args are kill, mxmlc, and compc)" unless ["kill", "server", "mxmlc", "compc"].include?(ARGV[0])
+
+# server argument
+if (ARGV[0]=='server') then
+  raise "Cannot use server with other operations" if (ARGV.length>1)
+  Server.ascshd_server()
+  exit
+end
+
+# Check if server is running, start it if necessary
+begin
+  s = TCPSocket.open($hostname, $port)
+rescue Errno::ECONNREFUSED
+  if $is_kill then
+    puts "ascshd is not running."
+    exit
+  end
+  spawn(ENV, "ruby #{$0} server")
+  # fork doesn't work on windows...
+  #fork do
+  #  Server.ascshd_server()
+  #end
+  sleep 0.25 # wait for server to start
+  s = TCPSocket.open($hostname, $port)
+end
+
+# Send command to server
+if $is_kill then
+  puts "Killing server..."
+  s.puts "kill"
+  sleep 0.25
+else
+  s.puts ARGV.join('|x|') # split token in ascsh
+  while (line=s.gets) do puts line end
+end
+
+s.close
