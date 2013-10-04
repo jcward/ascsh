@@ -22,7 +22,6 @@ class Server
   # Server feeds the ascsh process
   def self.ascshd_server
     server = TCPServer.open($port)
-    puts "Starting aschd server, v0.2, port #{$port}, pid #{Process.pid}"
     ascsh_process = IO.popen($ascsh_bin+" 2>&1", "r+")
     read_until_prompt(ascsh_process)
 
@@ -44,16 +43,17 @@ class Server
         result.split("\n").each { |line| client.puts(line) }
         client.close
       end
-
     }
   end
-end
 
-# Check args
-if (ARGV.length==0) then
-  puts "ascshd v0.2 by Jeff Ward, simbulus.com"
-  puts "Usage: ascshd [kill] [server] [mxmlc <args>] [compc <args>]"
-  exit
+  def self.start_server
+    pid = fork do
+      ascshd_server()
+    end
+    puts "Starting aschd server, v0.2, port #{$port}, pid #{pid}, #{$ascsh_bin}"
+    sleep 0.25 # wait for server to start
+  end
+
 end
 
 # Check for AIR SDK with ascsh installed
@@ -63,38 +63,49 @@ $is_kill = ARGV[0]=='kill'
 raise "Cannot use kill with other operations" if ($is_kill && ARGV.length>1)
 raise "Invalid argument '#{ARGV[0]}' (valid args are kill, mxmlc, and compc)" unless ["kill", "server", "mxmlc", "compc"].include?(ARGV[0])
 
-# server argument
-if (ARGV[0]=='server') then
-  raise "Cannot use server with other operations" if (ARGV.length>1)
-  Server.ascshd_server()
-  exit
-end
-
-# Check if server is running, start it if necessary
+# Check if server is running
+$is_running = false
 begin
   s = TCPSocket.open($hostname, $port)
+  $is_running = true
 rescue Errno::ECONNREFUSED
   if $is_kill then
     puts "ascshd is not running."
     exit
   end
-  spawn(ENV, "ruby #{$0} server")
-  # fork doesn't work on windows...
-  #fork do
-  #  Server.ascshd_server()
-  #end
+end
+
+# handle kill
+if ($is_kill) then
+  if (!$is_running) then
+    puts "Server isn't running"
+    exit
+  end
+  puts "Killing server..."
+  s.puts "kill"
+  sleep 0.25
+  exit
+end
+
+# handle server
+if (ARGV[0]=='server') then
+  if ($is_running) then
+    puts "Server already running"
+    s.close
+    exit
+  end
+  raise "Cannot use server with other operations" if (ARGV.length>1)
+  Server.start_server()
+  exit
+end
+
+# send command (and start if not running)
+if (!$is_running) then
+  Server.start_server()
   sleep 0.25 # wait for server to start
   s = TCPSocket.open($hostname, $port)
 end
 
-# Send command to server
-if $is_kill then
-  puts "Killing server..."
-  s.puts "kill"
-  sleep 0.25
-else
-  s.puts ARGV.join('|x|') # split token in ascsh
-  while (line=s.gets) do puts line end
-end
-
+s.puts ARGV.join('|x|') # split token in ascsh
+while (line=s.gets) do puts line end
 s.close
