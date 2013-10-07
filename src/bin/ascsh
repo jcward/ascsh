@@ -1,3 +1,5 @@
+# This is a copy of AIRSDK/bin/mxmlc that calls ascsh instead of mxmlc
+
 if [ "x${AIR_SDK_HOME}" = "x" ]
 then
     SCRIPT_HOME=`dirname $0`
