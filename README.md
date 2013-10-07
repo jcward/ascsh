@@ -4,7 +4,7 @@ ActionScript Compiler 2.0 Shell
 `ascsh` and `ascshd`* are wrappers for the new ActionScript Compiler 2.0,
 modelled to be roughly equivalent to the older Flex Compiler's `fcsh` and `fcshd`.
 They improve AS3/AIR/SWF/SWC project compilation performance by maintaining a
-persistent JVM compiler process.  See my [blog post](http://jcward.com/Faster+ASC+2.0+Builds)
+persistent JVM compiler process.  See my [blog post](http://jcward.com/FCSH+for+ASC+2.0+Compiler)
 for more info and a little backstory.
 
 Setup
