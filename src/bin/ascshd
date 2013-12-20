@@ -3,7 +3,7 @@
 require 'socket'
 
 $hostname = 'localhost'
-$port = 27839
+$port = 27839+`id -u`.to_i rescue 27839
 $ascsh_bin = ENV["AIR_HOME"]+"/bin/ascsh"
 
 class Server
@@ -90,7 +90,7 @@ end
 # handle server
 if (ARGV[0]=='server') then
   if ($is_running) then
-    puts "Server already running"
+    puts "Server already running on port #{$port}"
     s.close
     exit
   end
