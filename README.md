@@ -57,5 +57,6 @@ The ruby script should be fairly straight-forward to replicate.
 History
 -------
 
-version 0.2 - working ascsh, ascshd in Ruby (Windows support iffy)
-version 0.1 - proof of concept
+* version 0.3 - ascsh mimics fcsh prompts (for FlashDevelop), but only one target supported for now
+* version 0.2 - working ascsh, ascshd in Ruby (Windows support iffy)
+* version 0.1 - proof of concept

@@ -7,7 +7,7 @@ $port = 27839+`id -u`.to_i rescue 27839
 $ascsh_bin = ENV["AIR_HOME"]+"/bin/ascsh"
 
 class Server
-  ASCSH_PROMPT = "(ascsh)\n"
+  ASCSH_PROMPT = "(fcsh) "
   @output_buffer = ""
   def self.read_until_prompt(proc)
     @output_buffer << proc.readpartial(256) until
