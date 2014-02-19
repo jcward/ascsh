@@ -38,6 +38,9 @@
       <copy todir="${env.AIR_HOME}/bin" overwrite="true">
         <fileset dir="src/bin"/>
       </copy>
+      <chmod perm="ugo+rx">
+        <fileset dir="${env.AIR_HOME}/bin" includes="ascsh*" defaultexcludes="false"/>
+      </chmod>
       <echo message="----------------------------------------------------------------" />
     </target>
 
