@@ -14,6 +14,24 @@ Clone (or download) the repo and run `ant install`.  This will install `ascsh` a
 `acsshd` into the AIR SDK bin and lib directories.  You must have the `AIR_HOME`
 environment variable configured to point to your AIR SDK.
 
+```
+>ant install
+Buildfile: /home/admin/dev/ascsh/build.xml
+
+compile:
+
+install:
+     [echo] ----------------------------------------------------------------
+     [echo] Installing ascsh to AIR_HOME at /opt/air_sdk_3.9
+     [echo] ----------------------------------------------------------------
+     [copy] Copying 2 files to /opt/air_sdk_3.9/lib
+     [copy] Copying 3 files to /opt/air_sdk_3.9/bin
+     [echo] ----------------------------------------------------------------
+
+BUILD SUCCESSFUL
+Total time: 0 seconds
+```
+
 You may also run `ant uninstall` to remove files from your AIR SDK.
 
 Usage

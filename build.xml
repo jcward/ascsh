@@ -11,7 +11,7 @@
 
     <target name="compile">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src/java" destdir="build/classes" classpathref="classpath"/>
+        <javac srcdir="src/java" destdir="build/classes" classpathref="classpath" includeantruntime="false"/>
     </target>
 
     <target name="jar">
@@ -23,19 +23,19 @@
             </manifest>
         </jar>
         <mkdir dir="dist"/>
-        <copy todir="dist">
+        <copy todir="dist" overwrite="true">
           <fileset dir="build/jar" includes="ascsh.jar"/>
         </copy>
     </target>
 
     <target name="install" depends="compile" description="Install ascsh/ascshd into AIR_SDK">
       <echo message="----------------------------------------------------------------" />
-      <echo message="Installing ascsh to AIR_HOME at ${env.JAVA_HOME}" />
+      <echo message="Installing ascsh to AIR_HOME at ${env.AIR_HOME}" />
       <echo message="----------------------------------------------------------------" />
-      <copy todir="${env.AIR_HOME}/lib">
+      <copy todir="${env.AIR_HOME}/lib" overwrite="true">
         <fileset dir="build/classes"/>
       </copy>
-      <copy todir="${env.AIR_HOME}/bin">
+      <copy todir="${env.AIR_HOME}/bin" overwrite="true">
         <fileset dir="src/bin"/>
       </copy>
       <echo message="----------------------------------------------------------------" />
