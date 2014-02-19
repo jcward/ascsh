@@ -2,3 +2,4 @@
 reference
 test/*.swf
 src/**/*.class
+build

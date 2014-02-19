@@ -10,11 +10,11 @@ for more info and a little backstory.
 Setup
 -----
 
-Clone (or download) the repo and run `./install.sh` (Linux/Mac) or `install.bat` (Windows).  Install will alert
-you that you must have the `$AIR_HOME` environment variable set.  If so, it will compile and install `ascsh` and
-`acsshd` into the AIR SDK bin and lib directories.
+Clone (or download) the repo and run `ant install`.  This will install `ascsh` and
+`acsshd` into the AIR SDK bin and lib directories.  You must have the `AIR_HOME`
+environment variable configured to point to your AIR SDK.
 
-`uninstall.sh` and `uninstall.bat` remove `ascsh` and `ascshd`
+You may also run `ant uninstall` to remove files from your AIR SDK.
 
 Usage
 -----

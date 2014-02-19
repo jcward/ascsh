@@ -1,0 +1,57 @@
+<project>
+
+    <property environment="env"/>
+    <path id="classpath">
+        <fileset dir="${env.AIR_HOME}/lib" includes="compiler.jar"/>
+    </path>
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src/java" destdir="build/classes" classpathref="classpath"/>
+    </target>
+
+    <target name="jar">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/ascsh.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="ascsh"/>
+                <attribute name="Class-Path" value="compiler.jar"/>
+            </manifest>
+        </jar>
+        <mkdir dir="dist"/>
+        <copy todir="dist">
+          <fileset dir="build/jar" includes="ascsh.jar"/>
+        </copy>
+    </target>
+
+    <target name="install" depends="compile" description="Install ascsh/ascshd into AIR_SDK">
+      <echo message="----------------------------------------------------------------" />
+      <echo message="Installing ascsh to AIR_HOME at ${env.JAVA_HOME}" />
+      <echo message="----------------------------------------------------------------" />
+      <copy todir="${env.AIR_HOME}/lib">
+        <fileset dir="build/classes"/>
+      </copy>
+      <copy todir="${env.AIR_HOME}/bin">
+        <fileset dir="src/bin"/>
+      </copy>
+      <echo message="----------------------------------------------------------------" />
+    </target>
+
+    <target name="uninstall" description="Uninstall ascsh/ascshd from AIR_SDK">
+      <echo message="----------------------------------------------------------------" />
+      <echo message="Uninstalling ascsh from AIR_HOME at ${env.JAVA_HOME}" />
+      <echo message="----------------------------------------------------------------" />
+      <echo message="Deleting lib/ascsh.class, lib/Commandline.class, bin/ascsh*" />
+      <delete>
+        <fileset dir="${env.AIR_HOME}/lib" includes="ascsh.class" defaultexcludes="false"/>
+        <fileset dir="${env.AIR_HOME}/lib" includes="Commandline.class" defaultexcludes="false"/>
+        <fileset dir="${env.AIR_HOME}/bin" includes="ascsh*" defaultexcludes="false"/>
+      </delete>
+      <echo message="----------------------------------------------------------------" />
+    </target>
+
+</project>
