@@ -146,7 +146,7 @@ public class ascsh
       if (errPattern.matcher(line).matches()) {
         System.err.print(line);
         System.err.print(": ");
-      } else System.err.println(line);
+      } else System.err.println(lines[i]);
     }
       
     oldOut = null;
