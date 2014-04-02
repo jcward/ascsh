@@ -1,10 +1,12 @@
 import com.adobe.flash.compiler.clients.MXMLC;
 import com.adobe.flash.compiler.clients.COMPC;
+import java.io.*;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 public class ascsh
 {
@@ -13,7 +15,7 @@ public class ascsh
    */
   public static void main(String[] args)
   {
-    System.out.println("ascsh v0.3 by Jeff Ward, simbulus.com");
+    System.out.println("ascsh v0.4 by Jeff Ward, simbulus.com");
 
     if (args.length>0) {
       compile(args);
@@ -77,12 +79,14 @@ public class ascsh
         list = targets.get(idx);
         args = list.toArray(new String[list.size()]);
         if (compiler instanceof MXMLC) {
-          //exitCode = ((MXMLC)compiler).mainNoExit(args); // hangs on second compile...
+          startCapture();
           exitCode = ((MXMLC)compiler).staticMainNoExit(args);
+          stopCapture();          
         } else {
-          //exitCode = ((COMPC)compiler).mainNoExit(args); // hangs on second compile...
+          startCapture();
           exitCode = ((COMPC)compiler).staticMainNoExit(args);
-        }
+          stopCapture();
+       }
       }
     } else {
       args = list.toArray(new String[list.size()]);
@@ -96,20 +100,57 @@ public class ascsh
         MXMLC compiler = new MXMLC();
         compilers.add(compiler);
         targets.add(list);
-        //exitCode = compiler.mainNoExit(args); // hangs on second compile...
+        startCapture();
         exitCode = compiler.staticMainNoExit(args);
+        stopCapture();
       } else if (command.equals("compc")) {
         COMPC compiler = new COMPC();
         compilers.add(compiler);
         targets.add(list);
-        //exitCode = compiler.mainNoExit(args); // hangs on second compile...
+        startCapture();
         exitCode = compiler.staticMainNoExit(args);
+        stopCapture();
       } else {
         System.out.println("ascsh unknown command '"+command+"'");
         exitCode = 255;
       }
     }
     System.out.println("Compile status: "+exitCode);
+  }
+  
+  static ByteArrayOutputStream buffer;
+  static PrintStream oldOut;
+  static Pattern errPattern = Pattern.compile(".*\\.[a-z]+.*:[0-9]+");
+  
+  static void startCapture()
+  {
+    buffer = new ByteArrayOutputStream();
+    PrintStream ps = new PrintStream(buffer);
+    // IMPORTANT: Save the old System.out!
+    oldOut = System.err;
+    // Tell Java to use your special stream
+    System.setErr(ps);
+    // Print some output: goes to your special stream
+  }
+  
+  static void stopCapture()
+  {
+    // Put things back
+    System.err.flush();
+    System.setErr(oldOut);
+    
+    // Reformat errors to match FCSH
+    String[] lines = buffer.toString().split("\n");
+    for (int i=0, len=lines.length; i<len; i++) {
+      String line = lines[i].trim();
+      if (errPattern.matcher(line).matches()) {
+        System.err.print(line);
+        System.err.print(": ");
+      } else System.err.println(lines[i]);
+    }
+      
+    oldOut = null;
+    buffer = null;
   }
 
   /**
