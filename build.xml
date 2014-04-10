@@ -14,7 +14,7 @@
         <javac srcdir="src/java" destdir="build/classes" classpathref="classpath" includeantruntime="false"/>
     </target>
 
-    <target name="jar">
+    <target name="jar" depends="compile">
         <mkdir dir="build/jar"/>
         <jar destfile="build/jar/ascsh.jar" basedir="build/classes">
             <manifest>

@@ -2,8 +2,18 @@
 
 require 'socket'
 
+args = ARGV.clone
+if (args[0]=='-p') then
+  # Port specified via commandline
+  $port = args[1]
+  args.shift
+  args.shift
+else
+  # Default - different port per user
+  $port = 27839+`id -u`.to_i rescue 27839
+end
+
 $hostname = 'localhost'
-$port = 27839+`id -u`.to_i rescue 27839
 $ascsh_bin = ENV["AIR_HOME"]+"/bin/ascsh"
 
 class Server
@@ -50,8 +60,8 @@ class Server
     pid = fork do
       ascshd_server()
     end
-    puts "Starting aschd server, v0.2, port #{$port}, pid #{pid}, #{$ascsh_bin}"
-    sleep 0.25 # wait for server to start
+    puts "Starting aschd server, v0.5, port #{$port}, pid #{pid}, #{$ascsh_bin}"
+    sleep 0.5 # wait for server to start
   end
 
 end
@@ -59,9 +69,9 @@ end
 # Check for AIR SDK with ascsh installed
 raise "Cannot find ascsh at \$AIR_HOME/bin/ascsh" unless File.exist?($ascsh_bin)
 
-$is_kill = ARGV[0]=='kill'
-raise "Cannot use kill with other operations" if ($is_kill && ARGV.length>1)
-raise "Invalid argument '#{ARGV[0]}' (valid args are kill, mxmlc, and compc)" unless ["kill", "server", "mxmlc", "compc"].include?(ARGV[0])
+$is_kill = args[0]=='kill'
+raise "Cannot use kill with other operations" if ($is_kill && args.length>1)
+raise "Invalid argument '#{args[0]}' (valid args are kill, mxmlc, and compc)" unless ["kill", "server", "mxmlc", "compc"].include?(args[0])
 
 # Check if server is running
 $is_running = false
@@ -88,13 +98,13 @@ if ($is_kill) then
 end
 
 # handle server
-if (ARGV[0]=='server') then
+if (args[0]=='server') then
   if ($is_running) then
     puts "Server already running on port #{$port}"
     s.close
     exit
   end
-  raise "Cannot use server with other operations" if (ARGV.length>1)
+  raise "Cannot use server with other operations" if (args.length>1)
   Server.start_server()
   exit
 end
@@ -106,6 +116,6 @@ if (!$is_running) then
   s = TCPSocket.open($hostname, $port)
 end
 
-s.puts ARGV.join('|x|') # split token in ascsh
+s.puts args.join('|x|') # split token in ascsh
 while (line=s.gets) do puts line end
 s.close

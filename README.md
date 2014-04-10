@@ -37,8 +37,59 @@ You may also run `ant uninstall` to remove files from your AIR SDK.
 Usage
 -----
 
-`ascsh `is a shell (like `fcsh`) that it a shell and requires text input to kick off a new
-build.  Simply enter your compile command at the prompt:
+You can use this project from FlashDevelop, or from the command-line like
+fcsh or fcshd.
+
+**Using ASCSH with FlashDevelop**
+
+FlashDevelop 4.6.1 and newer include this ascsh jarfile, so building with the AIR
+SDK should result in fast compile times.  In the output panel for the first build
+you should see `INITIALIZING: ascsh v0.3 by Jeff Ward` and on subsequent builds
+`Incremental compile of 1`.  If you have problems, you might check the [FlashDevelop
+forums](http://www.flashdevelop.org/community/) for help with asc2 incremental compilation.
+
+Developers may wish to modify `ascsh`, rebuild with `ant jar`, and re-install the
+resultant `dist/ascsh.jar` file into your FlashDevelop installation.
+
+**Using ASCSHD from the command-line**
+
+`ascshd` is a convenience wrapper around `ascsh` and is the most common way of invoking
+`ascsh` from the command-line.  It operates just like `fcshd` - it starts a background
+server thread to maintain the `ascsh` process and sends commands to it for builds.
+This way, your build can simply call `ascshd` by prefixing it to your `mxmlc`
+command, and it just gets faster over time:
+
+````
+> $AIR_HOME/bin/ascshd mxmlc main.as -source-path+=. -optimize -o main.swf
+  ... 10 second build (initial compile)
+> $AIR_HOME/bin/ascshd mxmlc main.as -source-path+=. -optimize -o main.swf
+  ... 2 second build (subsequent compiles)
+````
+
+Stop the server process by calling `$AIR_HOME/bin/ascshd kill`
+
+To run multiple instances of `ascshd`, specify a port number before the
+mxmlc or kill commands:
+
+````
+> $AIR_HOME/bin/ascshd -p 11123 mxmlc app1.as -source-path+=. -optimize -o app1.swf
+> $AIR_HOME/bin/ascshd -p 11124 mxmlc app2.as -source-path+=. -optimize -o app2.swf
+> $AIR_HOME/bin/ascshd -p 11123 kill
+> $AIR_HOME/bin/ascshd -p 11124 kill
+````
+
+* Note that the `ascshd` server may not work under Windows.  It's currently a Ruby
+script that uses processes, sockets, and process I/O to operate, and it seems to
+hang on Windows.  I'd like to hear others' feedback - feel free to contribute a
+Windows-compatible `ascshd` (in any language you like - perl, python, Java, etc.)
+The ruby script should be fairly straight-forward to replicate.
+
+**Using ASCSH from the command-line**
+
+`ascsh` itself is a shell (like `fcsh`) and requires text input to kick off initial
+and subsequent builds.  It is invoked under-the-hood when you use `ascshd` or
+FlashDevelop.  But you can use it from the command-line, should you want to.
+Simply enter your compile command at the prompt:
 
 ````
 > $AIR_HOME/bin/ascsh
@@ -52,29 +103,11 @@ mxmlc main.as -o Main.as
 (ascsh)
 ````
 
-`ascshd` is a convenience wrapper around `ascsh` currently written in Ruby.  It
-starts a background server thread to maintain the `ascsh` process, and sends
-commands to it for builds.  This way, your build can simply call `ascshd` again
-and again from your build system (no fussy shell), and it just gets faster over time:
-
-````
-> $AIR_HOME/bin/ascsdh mxmlc main.as -o Main.as
-  ... 10 second build
-> $AIR_HOME/bin/ascsdh mxmlc main.as -o Main.as
-  ... 2 second build
-````
-
-Stop the server process by calling `ascshd kill`
-
-* Note that **ascshd may not work under Windows**.  It's currently a Ruby script
-that uses processes, sockets, and process I/O to operate, and it seems to
-hang on Windows.  I'd like to hear others' feedback - feel free to contribute a
-Windows-compatible `ascshd` (in any language you like - perl, python, Java, etc.)
-The ruby script should be fairly straight-forward to replicate.
-
 History
 -------
 
+* version 0.5 - Updated README, ascshd support for specifying port (multiple instances)
+* version 0.4 - Fixes for FlashDevelop (thanks to Philippe Elsass)
 * version 0.3 - ascsh mimics fcsh prompts (for FlashDevelop), but only one target supported for now
 * version 0.2 - working ascsh, ascshd in Ruby (Windows support iffy)
 * version 0.1 - proof of concept
