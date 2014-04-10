@@ -13,11 +13,23 @@ else
   $port = 27839+`id -u`.to_i rescue 27839
 end
 
+if (args[0]=='killall') then
+  begin
+    procs = `pgrep -f 'ruby.*ascshd'`.split("\n")
+    procs.reject! { |pid| pid.to_i == Process.pid }
+    puts "Killing #{procs.length-1} ascshd instances..."
+    `kill #{procs.join(" ")} 2>/dev/null`
+  rescue
+    puts "Your OS doesn't seem to support killall!"
+  end
+  exit
+end
+
 $hostname = 'localhost'
 $ascsh_bin = ENV["AIR_HOME"]+"/bin/ascsh"
 
 class Server
-  ASCSH_PROMPT = "(fcsh) "
+  ASCSH_PROMPT = "(ascsh) "
   @output_buffer = ""
   def self.read_until_prompt(proc)
     @output_buffer << proc.readpartial(256) until

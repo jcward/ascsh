@@ -71,6 +71,8 @@ command, and it just gets faster over time:
 
 Stop the server process by calling `$AIR_HOME/bin/ascshd kill`
 
+**Multiple instances of ascshd**
+
 To run multiple instances of `ascshd`, specify a port number before the
 mxmlc or kill commands:
 
@@ -79,6 +81,11 @@ mxmlc or kill commands:
 > $AIR_HOME/bin/ascshd -p 11124 mxmlc app2.as -source-path+=. -optimize -o app2.swf
 > $AIR_HOME/bin/ascshd -p 11123 kill
 > $AIR_HOME/bin/ascshd -p 11124 kill
+````
+
+To kill all instances at once, use:
+````
+> $AIR_HOME/bin/ascshd killall
 ````
 
 * Note that the `ascshd` server may not work under Windows.  It's currently a Ruby
@@ -109,8 +116,34 @@ mxmlc main.as -o Main.as
 Version History
 ---------------
 
-* version 0.5 - Updated README, build.xml uses Java target 1.6 compatibility, ascshd support for specifying port (multiple instances)
+* version 0.5 - Updated README, build.xml uses Java target 1.6 compatibility, ascshd support for specifying port (multiple instances), ascsh_cmd.java created (see below)
 * version 0.4 - Fixes for FlashDevelop (thanks to Philippe Elsass)
 * version 0.3 - ascsh mimics fcsh prompts (for FlashDevelop), but only one target supported for now
 * version 0.2 - working ascsh, ascshd in Ruby (Windows support iffy)
 * version 0.1 - proof of concept
+
+ascsh.java vs ascsh_cmd.java
+----------------------------
+
+Unfortunately, the FlashDevelop-compatible ascsh.java no longer works correctly from the command-line,
+and I can't figure out why.  I spent a long time commenting/uncommenting code that just shouldn't
+make a difference.  If ascsh.java is used in the command-line flow, it seems to ignore configuration
+settings that should be setting the Flash target version to 11.9, and trying to load 11.1 instead:
+
+````
+> cd test; $AIR_HOME/bin/ascsh
+ascsh v0.4 by Jeff Ward, simbulus.com
+(fcsh) mxmlc simple.as
+fcsh: Assigned 1 as the compile target id
+Loading configuration: /opt/air_sdk_3.9/frameworks/flex-config.xml
+
+/opt/air_sdk_3.9/frameworks/flex-config.xml:47: Error: unable to open '/opt/air_sdk_3.9/frameworks/libs/player/11.1/playerglobal.swc'.
+/opt/air_sdk_3.9/frameworks/flex-config.xml (line: 47)
+        </external-library-path>
+Compile status: 4
+(fcsh) ^C
+````
+
+The upshot is, I had to introduce `ascsh_cmd.java` that works for the command-line, and leave
+`ascsh.java` that works with FlashDevelop.  I'm also not going to commit a `dist/ascsh.jar`
+as I'll assume Philippe's last version is good.
