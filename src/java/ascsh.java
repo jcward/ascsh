@@ -15,7 +15,7 @@ public class ascsh
    */
   public static void main(String[] args)
   {
-    System.out.println("ascsh v0.4 by Jeff Ward, simbulus.com");
+    System.out.println("ascsh v0.5 by Jeff Ward, simbulus.com");
 
     if (args.length>0) {
       compile(args);

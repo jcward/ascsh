@@ -10,6 +10,9 @@ for more info and a little backstory.
 Setup
 -----
 
+FlashDevelop users don't need to do any setup, as `ascsh.jar` is included in
+version 4.6.1 and later.  Command-line users should follow these instructions:
+
 Clone (or download) the repo and run `ant install`.  This will install `ascsh` and
 `acsshd` into the AIR SDK bin and lib directories.  You must have the `AIR_HOME`
 environment variable configured to point to your AIR SDK.
@@ -103,10 +106,10 @@ mxmlc main.as -o Main.as
 (ascsh)
 ````
 
-History
--------
+Version History
+---------------
 
-* version 0.5 - Updated README, ascshd support for specifying port (multiple instances)
+* version 0.5 - Updated README, build.xml uses Java target 1.6 compatibility, ascshd support for specifying port (multiple instances)
 * version 0.4 - Fixes for FlashDevelop (thanks to Philippe Elsass)
 * version 0.3 - ascsh mimics fcsh prompts (for FlashDevelop), but only one target supported for now
 * version 0.2 - working ascsh, ascshd in Ruby (Windows support iffy)
