@@ -88,7 +88,9 @@ To kill all instances at once, use:
 > $AIR_HOME/bin/ascshd killall
 ````
 
-* Note that the `ascshd` server may not work under Windows.  It's currently a Ruby
+**ascshd + Windows = :(**
+
+Note that the `ascshd` server may not work under Windows.  It's currently a Ruby
 script that uses processes, sockets, and process I/O to operate, and it seems to
 hang on Windows.  I'd like to hear others' feedback - feel free to contribute a
 Windows-compatible `ascshd` (in any language you like - perl, python, Java, etc.)
@@ -146,4 +148,4 @@ Compile status: 4
 
 The upshot is, I had to introduce `ascsh_cmd.java` that works for the command-line, and leave
 `ascsh.java` that works with FlashDevelop.  I'm also not going to commit a `dist/ascsh.jar`
-as I'll assume Philippe's last version is good.
+as I'll assume Philippe's last version (0.4) is good.
