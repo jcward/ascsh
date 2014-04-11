@@ -8,7 +8,7 @@ if "%AIR_HOME%"=="" (
 if exist %AIR_HOME%\lib\compiler.jar (
   rem compile and install
   @javac -cp "%AIR_HOME%\lib;%AIR_HOME%\lib\compiler.jar;src/java" src\java\Commandline.java
-	@javac -cp "%AIR_HOME%\lib;%AIR_HOME%\lib\compiler.jar;src/java" src\java\ascsh.java
+	@javac -cp "%AIR_HOME%\lib;%AIR_HOME%\lib\compiler.jar;src/java" src\java\ascsh_cmd.java
   copy src\java\*.class %AIR_HOME%\lib\
   copy src\bin\* %AIR_HOME%\bin\
   echo Installed ascsh into %AIR_HOME%

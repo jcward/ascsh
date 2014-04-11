@@ -7,7 +7,7 @@ if [ -f "$AIR_HOME/lib/compiler.jar" ]
 then
   # compile and install
   javac -cp $AIR_HOME/lib:$AIR_HOME/lib/compiler.jar:src/java src/java/Commandline.java && \
-	javac -cp $AIR_HOME/lib:$AIR_HOME/lib/compiler.jar:src/java src/java/ascsh.java && \
+	javac -cp $AIR_HOME/lib:$AIR_HOME/lib/compiler.jar:src/java src/java/ascsh_cmd.java && \
   cp src/java/*.class $AIR_HOME/lib/ && \
   cp src/bin/* $AIR_HOME/bin/
   echo "Installed ascsh into $AIR_HOME"

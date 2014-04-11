@@ -7,7 +7,7 @@ if "%AIR_HOME%"=="" (
 
 if exist %AIR_HOME%\lib\ascsh.class (
   rem uninstall
-  del %AIR_HOME%\lib\ascsh.class
+  del %AIR_HOME%\lib\ascsh_cmd.class
 	del %AIR_HOME%\lib\Commandline.class
 	del %AIR_HOME%\bin\ascsh*
   echo Removed ascsh from %AIR_HOME%

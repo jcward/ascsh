@@ -6,7 +6,7 @@ fi
 if [ -f "$AIR_HOME/lib/ascsh.class" ]
 then
   # uninstall
-  rm $AIR_HOME/lib/ascsh.class
+  rm $AIR_HOME/lib/ascsh_cmd.class
   rm $AIR_HOME/lib/Commandline.class
   rm $AIR_HOME/bin/ascsh*
   echo "Removed ascsh from $AIR_HOME"
