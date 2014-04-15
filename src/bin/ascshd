@@ -60,10 +60,14 @@ class Server
         ascsh_process = nil
         exit
       else
-        ascsh_process.puts(cmd)
-        result = read_until_prompt(ascsh_process)
-        result.split("\n").each { |line| client.puts(line) }
-        client.close
+        begin
+          ascsh_process.puts(cmd)
+          result = read_until_prompt(ascsh_process)
+          result.split("\n").each { |line| client.puts(line) }
+        rescue Errno::EPIPE
+          puts "Error, ascsh communication interrupted, compile status unknown"
+        end
+        client.close rescue nil
       end
     }
   end
