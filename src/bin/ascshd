@@ -26,7 +26,7 @@ if (args[0]=='killall') then
 end
 
 $hostname = 'localhost'
-$ascsh_bin = ENV["AIR_HOME"]+"/bin/ascsh"
+$ascsh_bin = ENV["AIR_SDK_HOME"].gsub('\\', '/')+"/bin/ascsh"
 
 class Server
   ASCSH_PROMPT = "(ascsh) "
