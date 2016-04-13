@@ -26,4 +26,4 @@ fi
 
 VMARGS="-Xmx512m -Dsun.io.useCanonCaches=false "
 
-java $VMARGS $SETUP_SH_VMARGS -Dflexlib="$AIR_SDK_HOME/frameworks" -cp ${AIR_SDK_HOME}/lib;${AIR_SDK_HOME}/lib/compiler.jar ascsh_cmd "$@"
+java $VMARGS $SETUP_SH_VMARGS -Dflexlib="$AIR_SDK_HOME/frameworks" -cp "${AIR_SDK_HOME}/lib;${AIR_SDK_HOME}/lib/compiler.jar" ascsh_cmd "$@"
