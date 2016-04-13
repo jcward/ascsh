@@ -1,0 +1,11 @@
+* text=auto
+
+*.as    text
+*.bat   text
+*.java  text
+*.md    text
+*.sh    text eol=lf
+*.xml   text
+
+*.class  binary
+*.jar    binary
